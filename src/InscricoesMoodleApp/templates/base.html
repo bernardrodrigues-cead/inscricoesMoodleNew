@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <title>CEAD - Inscrições</title>
+
+    {% load static %}
+
+    <script src={% static 'js/tailwind.js' %}></script>
+    <script src={% static 'js/tailwindConfig.js' %}></script>
+    <script src={% static 'js/jquery.js' %}></script>
+</head>
+<body class="text-eigengrau font-roboto">
+    <header class="h-16 border-b shadow-md flex items-center justify-between p-8">
+        <a href="{% url 'index' %}" class="flex items-center gap-4">
+            <img src="{% static 'assets/cead_logo.png' %}" alt="Logo do CEAD" class="h-10">
+            <h1 class="text-xl">CEAD | Inscrição</h1>
+        </a>
+
+        {% if not user.is_anonymous %}
+        <div class="flex gap-4">
+            <span>Usuário: {{user}}</span>
+            <a class="text-redCead hover:underline" href="{% url 'logout' %}">Log Out</a>
+        </div>
+
+        {% endif %}
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <script src={% static 'js/jMask.js'%}></script>
+</body>
+</html>

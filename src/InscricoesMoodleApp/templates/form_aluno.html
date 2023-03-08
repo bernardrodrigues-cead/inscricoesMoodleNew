@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load custom_tags %}
+
+<main class="relative">
+{% if has_curso %}
+    <form 
+        method="post" 
+        enctype="multipart/form-data"
+        class="
+            border p-4 w-[992px] absolute left-[50%] -translate-x-1/2 mt-16 pb-16 flex flex-col gap-4
+            [&>div]:flex [&>div]:gap-8
+            [&>div>div]:flex [&>div>div]:gap-2 [&>div>div]:items-center
+            [&>div>div>input]:border [&>div>div>input]:p-2 focus:[&>div>div>input]:outline-redCead
+            [&>div>div>select]:p-2 [&>div>div>select]:ml-2 focus:[&>div>div>select]:outline-redCead
+
+        "
+    >{% csrf_token %}
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{error|escape}}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+
+        <div class="bg-redCead p-4">
+            <h2 class="text-white font-bold text-xl">Formulário de Inscrição</h2>
+        </div>
+
+        <div>
+            <div>{{form.cpf.label}}{{form.cpf}}</div>
+            <div>{{form.data_nascimento.label}}{{form.data_nascimento}}</div>
+            <div>{{form.siga.label}}{{form.siga}}</div>
+        </div>
+        
+        <div>
+            <div>{{form.curso.label}}{{form.curso}}</div>
+        </div>
+        
+        <div>
+            <div class="[&>input]:w-[380px]">{{form.nome.label}}{{form.nome}}</div>
+            <div class="[&>input]:w-[380px]">{{form.sobrenome.label}}{{form.sobrenome}}</div>
+        </div>
+        
+        <div>
+            <div class="[&>input]:w-[400px]">
+                <label class="w-16" for="email">{{form.email.label}}</label>
+                {{form.email}}
+            </div>
+            <div>{{form.telefone.label}}{{form.telefone}}</div>
+        </div>
+
+        <div>
+            <div id="documentacao" style="display: none;" class="transition-all duration-1000 [&>input]:w-[500px]">{{form.documentacao.label}}{{form.documentacao}}</div>
+        </div>
+        
+        <div>
+            <small class="text-xs">*O servidor foi indicado pelo município selecionado no EDITAL Nº 01, DE 03 DE OUTUBRO DE 2022 da UFJF-CRITT.</small>
+        </div>
+        
+        <div class="bg-redCead p-4">
+            <h3 class="text-white text-lg">Dados Adicionais</h3>
+        </div>
+
+        <h4 class="border-b border-redCead">Endereço Residencial</h4>
+
+        <div>
+            <div>{{form.cep.label}}{{form.cep}}</div>
+            <div class="[&>input]:w-[364px]">{{form.cidade.label}}{{form.cidade}}</div>
+            <div>{{form.uf.label}}{{form.uf}}</div>
+        </div>
+        <div class="d-flex gap-2 mb-2">
+            <div class="[&>input]:w-[650px]">{{form.logradouro.label}}{{form.logradouro}}</div>
+            <div class="[&>input]:w-full">{{form.numero.label}}{{form.numero}}</div>
+        </div>
+        <div>
+            <div>{{form.complemento.label}}{{form.complemento}}</div>
+            <div>{{form.bairro.label}}{{form.bairro}}</div>
+        </div>
+        <div>
+        </div>
+        
+        <div class="bg-redCead p-4">
+            <h3 class="text-white text-lg">Informações de Vínculo do Servidor com a Prefeitura</h3>
+        </div>
+
+        <div>
+            <div class="[&>input]:w-[800px]">{{form.cargo.label}}{{form.cargo}}</div>
+        </div>
+        <div>
+            <div class="[&>input]:w-[500px]">{{form.secretaria.label}}{{form.secretaria}}</div>
+            <div class="[&>input]:w-[272px]">{{form.matricula.label}}{{form.matricula}}</div>
+        </div>
+    
+        <button class="text-white font-bold bg-redCead py-2 w-20 hover:brightness-110" type="submit">
+            <span id="loading" style="display: none; "role="status"></span>
+            Enviar
+        </button>
+    </form>
+{% else %}
+    <span>
+        No momento, o CEAD não está oferecendo cursos nessa modalidade de inscrição.
+    </span>
+{% endif %}
+</main>
+
+<script>
+    $(document).ready(function(){
+        $('#id_cpf').mask('000.000.000-00', {reverse: true});
+        $('#id_cep').mask('00000-000');
+
+        var PhoneMaskBehavior = function (val) {
+            return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+        }
+        
+        Options = {
+            onKeyPress: function(val, e, field, options) {
+                field.mask(PhoneMaskBehavior.apply({}, arguments), options);
+            }
+        };
+
+        $('#id_telefone').mask(PhoneMaskBehavior, Options);
+
+        flag_list = {{flag_curso_list}}
+        
+        val = Number($('#id_curso').val())
+        
+        if(flag_list.includes(val)){
+            $('#documentacao').show(0).css('opacity', '1').css('transform', 'translateX(0)');
+        }else{
+            $('#documentacao').css('opacity', '0').css('transform', 'translateX(75%)').delay(1000).hide(0);
+        }
+    });
+    
+    $('#id_cep').on('change', async function(){
+        const response = await fetch('https://viacep.com.br/ws/' + $('#id_cep').val().replace('-','') + '/json/');
+        if(response.status == 200){
+            var data = await response.json();
+
+            $('#id_logradouro').val(data.logradouro);
+            $('#id_complemento').val(data.complemento);
+            $('#id_bairro').val(data.bairro);
+            $('#id_uf').val(data.uf);
+            $('#id_cidade').val(data.localidade);
+            $('#id_uf').val(data.uf).trigger('change');
+        }
+    })
+
+    $('#id_possui_siape').change(function(){
+        if($('#id_possui_siape').val() == 'True'){
+            $('#id_siape').show(0).css('opacity', '1').css('transform', 'translateX(0)');
+            $('#siape').show(0).css('opacity', '1').css('transform', 'translateX(0)');
+        }else{
+            $('#id_siape').css('opacity', '0').css('transform', 'translateX(-110%)').delay(1000).hide(0);
+            $('#siape').css('opacity', '0').css('transform', 'translateX(-110%)').delay(1000).hide(0);
+        }
+    })
+
+    $('#id_curso').change(function(){
+        flag_list = {{flag_curso_list}}
+        val = Number($('#id_curso').val())
+        if(flag_list.includes(val)){
+            $('#id_documentacao').show(0).css('opacity', '1').css('transform', 'translateX(0)');
+            $('#documentacao').show(0).css('opacity', '1').css('transform', 'translateX(0)');
+        }else{
+            $('#id_documentacao').css('opacity', '0').css('transform', 'translateX(75%)').delay(1000).hide(0);
+            $('#documentacao').css('opacity', '0').css('transform', 'translateX(75%)').delay(1000).hide(0);
+        }
+    })
+
+    $('.errorlist').addClass('border');
+
+    $('form').on('submit', () => {
+        $('#loading').css('display', 'inline')
+    })
+</script>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% load static %}
+
+
+
+<a  href="{% url url %}" class="h-[70vh] w-52 border shadow-lg flex flex-col justify-between group overflow-hidden hover:cursor-pointer hover:border-yellowCead">
+    <div class="triangle trasition-transform duration-1000 group-hover:scale-[3]">
+        <div class="h-16 bg-yellowCead"></div>
+        <div class="h-0 w-0 border-r-[calc(52px*3.98)] border-r-yellowCead border-b-[54px] border-b-transparent group-hover:-translate-y-[1px]"></div>
+    </div>
+    
+    <img src="{% static icon %}" class="transition-transform duration-1000 group-hover:-translate-y-16 group-hover:scale-125" />
+
+    <div class="h-16 bg-redCead flex items-center justify-center transition-all duration-1000">
+        <span class="text-2xl font-[500] text-white">
+            {{name}}
+        </span>
+    </div>
+</a>

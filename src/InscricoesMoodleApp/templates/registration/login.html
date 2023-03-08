@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main>
+    <form method="post" class="flex flex-col w-80 gap-4 border shadow-md p-4 ml-[50%] -translate-x-1/2 mt-16">{% csrf_token %}
+        {{form.errors}}
+        
+        <h2 class="text-3xl font-[700]">Login</h2>
+        <div class="flex flex-col
+            [&>input]:border focus:[&>input]:outline-redCead [&>input]:p-2
+            [&>label]:text-slate-600
+        ">
+            <label for="username">{{form.username.label}}</label>{{form.username}}
+            <label for="password" class="mt-2">{{form.password.label}}</label>{{form.password}}
+        </div>
+        <button type="submit" class="text-white font-bold bg-redCead py-2 w-20 hover:brightness-110">Enviar</button> 
+    </form>
+</main>
+
+{% endblock %}

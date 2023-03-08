@@ -1,0 +1,10 @@
+*.sql
+*.csv
+*.json
+*.pdf
+
+__pycache__
+Makefile
+
+outputs
+uploads
