@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <main class="flex flex-col gap-1 absolute left-1/2 -translate-x-1/2 mt-16">
+        <div class="flex gap-1">
+            <div class="w-[500px] px-2 py-1 bg-redCead">
+                <span class="text-white">Nome do Curso</span>
+            </div>
+            <div class="w-[80px] p-1 bg-redCead flex justify-center">
+                <span class="text-white">Inscritos</span>
+            </div>
+            <div class="w-[80px] p-1 bg-redCead flex justify-center">
+                <span class="text-white">Situação</span>
+            </div>
+            <div class="w-[80px] p-1 bg-redCead flex justify-center">
+                <span class="text-white">Detalhes</span>
+            </div>
+        </div>
+        
+        {% for curso in cursos %}
+        <div class="flex gap-1 group">
+            <div class="w-[500px] border px-2 py-1 group-hover:bg-zinc-100">
+                <span>{{curso.nome}}</span>
+            </div>
+            <div class="w-[80px] border p-1 flex justify-center group-hover:bg-zinc-100">
+                <span>{{curso.dadosdoaluno_set.all|length}}</span>
+            </div>
+            <div class="w-[80px] border p-1 flex justify-center group-hover:bg-zinc-100">
+                <span>{{curso.ativo}}</span>
+            </div>
+            <div class="w-[80px] border p-1 flex justify-center group-hover:bg-zinc-100">
+                <img class="w-6 h-auto" src="{% static 'assets/details.svg' %}" alt="Desenho de linhas, para a página de mais detalhes" />
+            </div>
+        </div>
+        {% endfor %}
+
+    </main>
+{% endblock %}

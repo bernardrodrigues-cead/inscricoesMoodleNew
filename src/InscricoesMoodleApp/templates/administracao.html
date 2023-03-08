@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<nav class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+    <ul class="flex flex-col gap-4">
+        <li>{% include 'includes/administracao_item.html' with url='curso_cadastro' title='Novo Curso'%}</li>
+        <li>{% include 'includes/administracao_item.html' with url='curso_lista' title='Lista de Cursos'%}</li>
+    </ul>
+</nav>
+
+
+{% endblock %}

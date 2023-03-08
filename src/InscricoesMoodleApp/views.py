@@ -2,7 +2,9 @@ import csv, json, os
 
 from django.shortcuts import render
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
+from django.views.generic import ListView
 from InscricoesMoodleApp.forms import AlunosForm, CursosForm
 from InscricoesMoodleApp.utils import PasswdGen, SendEmail
 from InscricoesMoodleApp.models import Curso
@@ -12,6 +14,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
+
+@login_required(login_url='/accounts/login/')
+def Administracao(request):
+    return render(request, 'administracao.html')
 
 class CadastroAlunoCreateView(CreateView):
     form_class = AlunosForm
@@ -175,3 +181,9 @@ class CadastroCursoCreateView(LoginRequiredMixin, CreateView):
         print(form.errors.as_data())
         messages.success(self.request, form.errors.as_data())
         return super().form_invalid(form)
+    
+class CursoListView(LoginRequiredMixin, ListView):
+    login_url = "/accounts/login"
+    model = Curso
+    template_name = 'list_curso.html'
+    context_object_name = 'cursos'
