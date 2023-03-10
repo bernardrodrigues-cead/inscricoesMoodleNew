@@ -14,8 +14,8 @@ class Curso(models.Model):
     nome = models.CharField(max_length=255)
     nome_breve = models.CharField(max_length=31, verbose_name="Nome Breve")
     categoria = models.CharField(max_length=9, choices=CATEGORIA_CHOICES)
-    data_inicio = models.DateField(verbose_name="Início das Atividades")
-    data_fim = models.DateField(verbose_name="Fim das Atividades")
+    data_inicio = models.DateTimeField(verbose_name="Início das Atividades")
+    data_fim = models.DateTimeField(verbose_name="Fim das Atividades")
     matricula_inicio = models.DateTimeField(verbose_name="Início das Inscrições")
     matricula_fim = models.DateTimeField(verbose_name="Fim das Inscrições")
     vagas = models.IntegerField(verbose_name="Número de Vagas")
@@ -23,11 +23,16 @@ class Curso(models.Model):
     
     anexar_documentacao = models.BooleanField(verbose_name="Anexar Documentação", default=False, null=True, blank=True)
 
-
     def __str__(self):
         return self.nome
 
 class DadosDoAluno(models.Model):
+    STATUS_CHOICES = (
+        ('A', 'Aprovado'),
+        ('R', 'Reprovado'),
+        ('W', 'Aguardando Avaliação')
+    )
+    
     curso = models.ForeignKey(Curso, on_delete=models.PROTECT, verbose_name="Curso Pretendido")
     documentacao = models.FileField(verbose_name="Documentação", upload_to="uploads", blank=True, null=True, validators=[validatePDF])
 
@@ -58,4 +63,5 @@ class DadosDoAluno(models.Model):
     cargo = models.CharField(max_length=255)
     matricula = models.CharField(max_length=31, verbose_name="Matrícula")
 
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='W')
     data_cadastro = models.DateTimeField(auto_now_add=True)

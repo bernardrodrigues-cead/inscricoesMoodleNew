@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="mb-16">
+    <div 
+        method="post" 
+        class="
+            ml-[50%] -translate-x-1/2 mt-16 flex flex-col gap-4 border p-4 shadow-md
+            [&>div]:flex [&>div]:justify-between [&>div]:gap-2
+            {% comment %} [&>div>div>input]:border [&>div>div>input]:p-2 focus:[&>div>div>input]:outline-redCead 
+            [&>div>div>select]:p-2 [&>div>div>select]:outline-redCead [&>div>div>select]:ml-2 {% endcomment %}
+        "
+    >{% csrf_token %}
+        {% include 'includes/errors.html' %}
+        
+        <div class="bg-redCead p-4">
+            <h2 class="text-white font-bold text-xl">{{curso.nome}}</h2>
+        </div>
+        <div>
+            <div><span class="font-bold">Nome do Curso: </span>{{curso.nome}}</div>
+            <div><span class="font-bold">Nome Breve: </span>{{curso.nome_breve}}</div>
+        </div>
+        
+        <div>
+            <div><span class="font-bold">Categoria: </span>{{curso.categoria}}</div>
+            <div><span class="font-bold">Anexar Documentação? </span>{% if curso.anexar_documentacao %}Sim{% else %}Não{% endif %}</div>
+        </div>
+
+        <div>
+            <div><span class="font-bold">Total de Vagas: </span>{{curso.vagas}}</div>
+            {% if now|date:"Y-m-d" >= curso.matricula_inicio|date:"Y-m-d"%}
+            <div><span class="font-bold">Total de Inscritos: </span>{{curso.dadosdoaluno_set.all|length}}</div>
+            {% endif %}
+        </div>
+        
+        <div>
+            <div><span class="font-bold">Início das Inscrições: </span>{{curso.matricula_inicio|date:"d/m/Y"}}</div>
+            <div><span class="font-bold">Encerramento das Inscrições: </span>{{curso.matricula_fim|date:"d/m/Y"}}</div>
+        </div>
+
+        <div>
+            <div><span class="font-bold">Início das Atividades: </span>{{curso.data_inicio|date:"d/m/Y"}}</div>
+            <div><span class="font-bold">Encerramento das Atividades: </span>{{curso.data_fim|date:"d/m/Y"}}</div>
+        </div>
+
+        <div>
+            <div>
+                <span class="font-bold">Situação atual: </span>
+                <span>
+                    {% if now|date:"Y-m-d" < curso.matricula_inicio|date:"Y-m-d" %}
+                    Cadastrado. Início das inscrições em {{curso.matricula_inicio|date:"d/m/Y"}}
+                    {% elif now|date:"Y-m-d" >= curso.matricula_inicio|date:"Y-m-d" and now|date:"Y-m-d" <= curso.matricula_fim|date:"Y-m-d" %}
+                    Inscrições abertas até o dia {{curso.matricula_fim|date:"d/m/Y"}}
+                    {% elif now|date:"Y-m-d" > curso.matricula_fim|date:"Y-m-d" and now|date:"Y-m-d" < curso.data_inicio|date:"Y-m-d" %}
+                    Inscrições encerradas. Início das atividades em {{curso.data_inicio|date:"d/m/Y"}}
+                    {% elif now|date:"Y-m-d" >= curso.data_inicio|date:"Y-m-d" and now|date:"Y-m-d" <= curso.data_fim|date:"Y-m-d" %}
+                    Curso em andamento, com encerramento previsto para {{curso.data_fim|date:"d/m/Y"}}
+                    {% else %}
+                    Curso encerrado
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    {% if inscritos|length > 0 %}
+    <div class="ml-[50%] -translate-x-1/2 mt-16 flex flex-col gap-4 border p-4 shadow-md">
+        <div class="bg-redCead p-4">
+            <h2 class="text-white font-bold text-xl">Lista de Inscritos</h2>
+        </div>
+        {% for inscrito in inscritos %}
+        <div class="flex justify-between items-center">
+            <div>
+                <span class="font-bold">Nome: </span>{{inscrito.nome}} {{inscrito.sobrenome}}
+            </div>
+            <div class="flex gap-6 items-center">
+                <div class="flex items-center gap-2">
+                    <div>
+                        <span class="font-bold">Status: </span>
+                        {{inscrito.get_status_display}}
+                    </div>
+                    <div class="h-4 w-4 rounded-full
+                        {% if inscrito.status == 'W' %}
+                        bg-zinc-500
+                        {% elif inscrito.status == 'A' %}
+                        bg-green-500
+                        {% else %}
+                        bg-red-500
+                        {% endif %}
+                    "></div>
+                </div>
+                <a class="bg-redCead text-white p-2 hover:cursor-pointer hover:brightness-110">Detalhes</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</main>
+
+{% endblock %}

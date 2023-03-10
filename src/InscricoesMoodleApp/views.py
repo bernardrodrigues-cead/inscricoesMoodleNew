@@ -1,13 +1,16 @@
 import csv, json, os
 
 from django.shortcuts import render
+from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from InscricoesMoodleApp.forms import AlunosForm, CursosForm
 from InscricoesMoodleApp.utils import PasswdGen, SendEmail
 from InscricoesMoodleApp.models import Curso
+from django.db import models
+from django.db.models import Case, When
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -174,6 +177,18 @@ class CadastroCursoCreateView(LoginRequiredMixin, CreateView):
     success_url = "/"
 
     def form_valid(self, form):
+        if(form.cleaned_data['data_inicio'] > form.cleaned_data['data_fim']):
+            messages.error(self.request, 'A data de encerramento das atividades deve ser posterior à data de início.')
+            return self.form_invalid(form)
+        
+        if(form.cleaned_data['matricula_inicio'] > form.cleaned_data['matricula_fim']):
+            messages.error(self.request, 'A data de encerramento das inscrições deve ser posterior à data de início.')
+            return self.form_invalid(form)
+        
+        if(form.cleaned_data['data_inicio'] < form.cleaned_data['matricula_fim']):
+            messages.error(self.request, 'A data de início das atividades deve ser posterior ao encerramento das inscrições.')
+            return self.form_invalid(form)
+        
         messages.success(self.request, "Curso cadastrado com sucesso")
         return super().form_valid(form)
 
@@ -187,3 +202,30 @@ class CursoListView(LoginRequiredMixin, ListView):
     model = Curso
     template_name = 'list_curso.html'
     context_object_name = 'cursos'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cursos'] = Curso.objects.all().order_by('nome')
+        context['now'] = timezone.now()
+        return context
+    
+class CursoDetailView(LoginRequiredMixin, DetailView):
+    model = Curso
+    context_object_name = 'curso'
+    template_name = 'detail_curso.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = self.get_object()
+        context['inscritos'] = obj.dadosdoaluno_set.annotate(
+            # ordena nessa ordem
+            custom_order=Case(
+                When(status='W', then=0),
+                When(status='A', then=1),
+                When(status='R', then=2),
+                default=None,
+                output_field=models.IntegerField()
+            )
+        ).order_by('custom_order', 'nome')
+        context['now'] = timezone.now()
+        return context

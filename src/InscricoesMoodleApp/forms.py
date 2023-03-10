@@ -1,14 +1,40 @@
 from django import forms
+from django.utils import timezone
 from InscricoesMoodleApp.models import Curso, DadosDoAluno
 from django.utils import timezone
-from localflavor.br.forms import BRCPFField
 
 class AlunosForm(forms.ModelForm):
-    curso = forms.ModelChoiceField(queryset=Curso.objects.filter(ativo=True).order_by('nome'), widget=forms.Select())
+    now = timezone.now()
+    curso = forms.ModelChoiceField(
+        queryset=Curso.objects.filter(
+            ativo=True, 
+            matricula_inicio__lte=now, 
+            matricula_fim__gte=now
+        ).order_by('nome'), widget=forms.Select()
+    )
 
     class Meta:
         model = DadosDoAluno
-        fields = '__all__'
+        fields = [
+            'cpf',
+            'data_nascimento',
+            'nome',
+            'sobrenome',
+            'email',
+            'cidade',
+            'telefone',
+            'cep',
+            'logradouro',
+            'numero',
+            'complemento',
+            'bairro',
+            'uf',
+            'siga',
+            'documentacao',
+            'secretaria',
+            'cargo',
+            'matricula',
+        ]
         widgets = {
             'cpf': forms.TextInput(attrs={'placeholder': 'Somente números'}),
             'data_nascimento': forms.TextInput(attrs={'type': 'date'}),

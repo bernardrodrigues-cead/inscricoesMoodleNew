@@ -11,7 +11,7 @@
             <div class="w-[80px] p-1 bg-redCead flex justify-center">
                 <span class="text-white">Inscritos</span>
             </div>
-            <div class="w-[80px] p-1 bg-redCead flex justify-center">
+            <div class="w-[140px] p-1 bg-redCead flex justify-center">
                 <span class="text-white">Situação</span>
             </div>
             <div class="w-[80px] p-1 bg-redCead flex justify-center">
@@ -27,11 +27,27 @@
             <div class="w-[80px] border p-1 flex justify-center group-hover:bg-zinc-100">
                 <span>{{curso.dadosdoaluno_set.all|length}}</span>
             </div>
-            <div class="w-[80px] border p-1 flex justify-center group-hover:bg-zinc-100">
-                <span>{{curso.ativo}}</span>
+            <div class="w-[140px] border p-1 flex justify-center group-hover:bg-zinc-100">
+                <span>
+                    {% if now|date:"Y-m-d" < curso.matricula_inicio|date:"Y-m-d" %}
+                    Cadastrado
+                    {% elif now|date:"Y-m-d" >= curso.matricula_inicio|date:"Y-m-d" and now|date:"Y-m-d" <= curso.matricula_fim|date:"Y-m-d" %}
+                    Inscrições
+                    {% elif now|date:"Y-m-d" > curso.matricula_fim|date:"Y-m-d" and now|date:"Y-m-d" < curso.data_inicio|date:"Y-m-d" %}
+                    Pós Inscrições
+                    {% elif now|date:"Y-m-d" >= curso.data_inicio|date:"Y-m-d" and now|date:"Y-m-d" <= curso.data_fim|date:"Y-m-d" %}
+                    Em andamento
+                    {% else %}
+                    Encerrado
+                    {% endif %}
+                </span>
             </div>
             <div class="w-[80px] border p-1 flex justify-center group-hover:bg-zinc-100">
-                <img class="w-6 h-auto" src="{% static 'assets/details.svg' %}" alt="Desenho de linhas, para a página de mais detalhes" />
+                <a 
+                    href={% url 'curso_detail' curso.id %}
+                >
+                    <img class="w-6 h-auto group-hover:filter-blackToCead" src="{% static 'assets/details.svg' %}" alt="Desenho de linhas, para a página de mais detalhes" />
+                </a>
             </div>
         </div>
         {% endfor %}

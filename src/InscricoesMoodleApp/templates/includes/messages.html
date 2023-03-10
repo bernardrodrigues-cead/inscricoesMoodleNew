@@ -1,0 +1,11 @@
+{% if messages %}
+    {% for message in messages %}
+    {% if message.tags == 'error' %}
+    <ul class="bg-red-600 w-fit p-2 absolute m-4 text-white opacity-0 animate-appearFromLeft">
+    {% else %}
+    <ul class="bg-green-600 w-fit p-2 absolute m-4 text-white opacity-0 animate-appearFromLeft">
+    {% endif %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    </ul>
+    {% endfor %}
+{% endif %}
