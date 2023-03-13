@@ -4,14 +4,13 @@ from InscricoesMoodleApp.models import Curso, DadosDoAluno
 from django.utils import timezone
 
 class AlunosForm(forms.ModelForm):
-    now = timezone.now()
-    curso = forms.ModelChoiceField(
-        queryset=Curso.objects.filter(
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['curso'].queryset = Curso.objects.filter(
             ativo=True, 
-            matricula_inicio__lte=now, 
-            matricula_fim__gte=now
-        ).order_by('nome'), widget=forms.Select()
-    )
+            matricula_inicio__lte=timezone.now(), 
+            matricula_fim__gte=timezone.now()
+        ).order_by('nome')
 
     class Meta:
         model = DadosDoAluno
@@ -21,6 +20,7 @@ class AlunosForm(forms.ModelForm):
             'nome',
             'sobrenome',
             'email',
+            'curso',
             'cidade',
             'telefone',
             'cep',
@@ -69,6 +69,7 @@ class CursosForm(forms.ModelForm):
             'nome',
             'nome_breve',
             'categoria',
+            'limite_vagas',
             'vagas',
             'data_inicio',
             'data_fim',
@@ -85,4 +86,5 @@ class CursosForm(forms.ModelForm):
             'matricula_inicio': forms.DateInput(attrs={'type': 'date'}),
             'matricula_fim': forms.DateInput(attrs={'type': 'date'}),
             'anexar_documentacao': forms.Select(choices=((False, "Não"), (True, "Sim"))),
+            'limite_vagas': forms.Select(choices=((False, "Não"), (True, "Sim")))
         }

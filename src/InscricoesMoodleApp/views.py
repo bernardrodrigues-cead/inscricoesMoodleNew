@@ -1,14 +1,16 @@
 import csv, json, os
+from django.http import FileResponse
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, UpdateView
 from InscricoesMoodleApp.forms import AlunosForm, CursosForm
 from InscricoesMoodleApp.utils import PasswdGen, SendEmail
-from InscricoesMoodleApp.models import Curso
+from InscricoesMoodleApp.models import Curso, DadosDoAluno
 from django.db import models
 from django.db.models import Case, When
 from django.utils.translation import gettext_lazy as _
@@ -39,11 +41,14 @@ class CadastroAlunoCreateView(CreateView):
         return context
     
     def form_valid(self, form):
+        pwd = PasswdGen()
+        senha = pwd.run()
         new_data = form.save(commit=False)
         # Atualização dos dados com máscara para que contenham apenas numerais
         new_data.telefone = form.cleaned_data['telefone'].replace('(', '').replace(')', '').replace('-', '').replace(' ', '')
         new_data.cpf = form.cleaned_data['cpf'].replace('.', '').replace('-', '')
         new_data.cep = form.cleaned_data['cep'].replace('-', '')
+        new_data.senha_inicial = senha
         
         # Formatação do diretório e do arquivo PDF que será armazenado
         dir_name = form.cleaned_data['curso'].data_inicio.strftime('%Y%m%d') + "_" + form.cleaned_data['curso'].nome_breve
@@ -54,84 +59,6 @@ class CadastroAlunoCreateView(CreateView):
             new_data.documentacao.name = dir_name + '/' + file_name
         
         new_data.save()
-        
-        self.request.session['dados_aluno'] = new_data.id
-
-        # Criação do nome do arquivo com base nos dados do curso
-        data_matricula = form.cleaned_data['curso'].matricula_inicio.strftime('%d%m%y')
-        nome = form.cleaned_data['curso'].nome
-        nome_breve = form.cleaned_data['curso'].nome_breve
-        
-        if not os.path.isdir('outputs/' + dir_name):
-            os.mkdir('outputs/' + dir_name)
-        filename = 'outputs/' + dir_name + '/' + nome + '_' + data_matricula
-
-        # Atualização dos campos do dicionário para a formatação de interesse 
-        form.cleaned_data['curso'] = form.cleaned_data['curso'].nome
-        form.cleaned_data['data_nascimento'] = form.cleaned_data['data_nascimento'].strftime('%d%m%y')
-        form.cleaned_data['cpf'] = form.cleaned_data['cpf'].replace('.', '').replace('-', '')
-        form.cleaned_data['telefone'] = form.cleaned_data['telefone'].replace('(', '').replace(')', '').replace(' ', '').replace('-', '')
-        form.cleaned_data['cep'] = form.cleaned_data['cep'].replace('-', '')
-        if form.cleaned_data['documentacao']:
-            form.cleaned_data['documentacao'] = form.cleaned_data['documentacao'].name
-        
-        ### JSON ###
-        # Verificação para o caso de já existirem alunos cadastrados no curso em questão
-        try:
-            with open(filename + '.json') as f:
-                listObj = json.load(f)
-        except:
-            listObj = []
-        listObj.append(form.cleaned_data)
-
-        # Conversão dos dados para json
-        cleaned_data_json = json.dumps(listObj, indent=4, ensure_ascii=False)
-        # Escrita do json
-        with open(filename + '.json', 'w') as f:
-            f.write(cleaned_data_json)
-
-        ### CSV ###
-        # Criação de um dicionário com cabeçalho adequado
-        pwd = PasswdGen()
-        new_data = {
-            'username': form.cleaned_data['cpf'],
-            'password': pwd.run(),
-            'firstname': form.cleaned_data['nome'],
-            'lastname': form.cleaned_data['sobrenome'],
-            'email': form.cleaned_data['email'],
-            'city': form.cleaned_data['cidade'],
-            'auth': 'manual',
-            'course1': nome_breve,
-        }
-
-        # Verificação para o caso de já existirem alunos cadastrados no curso em questão
-        try:
-            with open(filename + '.csv', 'r') as f:
-                if f.readline().split(',')[0] == 'username':
-                    flag = True
-                else:
-                    flag = False
-        except:
-            flag = False
-            
-        # Escrita do arquivo .csv
-        with open(filename + '.csv', 'a') as f:
-            writer = csv.DictWriter(f, fieldnames=list(new_data.keys()))
-            if not flag:
-                writer.writeheader()
-            writer.writerows([new_data])
-
-        ### MYSQL ###
-        # Escrita do arquivo MySQL
-        with open(filename + '_mysql.sql', 'a') as f:
-            f.write('INSERT INTO {{TABLE}}.{{SGDB}} ' + str(tuple(new_data.keys())) + ' ')
-            f.write('VALUES ' + str(tuple(new_data.values())) + ';\n')
-
-        ### SQL ###
-        with open(filename + '_postgresql.sql', 'a') as f:
-            f.write('INSERT INTO {{TABLE}}.{{SGDB}}' + str(tuple(new_data.keys())) + ' ')
-            f.write('VALUES ' + str(tuple(new_data.values())) + ';\n')
-        f.close()
 
         ### SEND EMAIL ###
         subject = "CEAD | UFJF - Orientações para Acesso à Plataforma Moodle"
@@ -154,9 +81,9 @@ class CadastroAlunoCreateView(CreateView):
         SAUT - Serviço de Atendimento ao Usuário
         Coordenação Tecnológica - CEAD | UFJF
 
-        """.format(form.cleaned_data['curso'], new_data['username'], new_data['password'])
+        """.format(form.cleaned_data['curso'], form.cleaned_data['cpf'].replace('.', '').replace('-', ''), senha)
 
-        recipients = [new_data['email']]
+        recipients = [form.cleaned_data['email']]
 
         new_email = SendEmail(subject=subject, message=message, recipients=recipients)
         new_email.send()
@@ -229,3 +156,63 @@ class CursoDetailView(LoginRequiredMixin, DetailView):
         ).order_by('custom_order', 'nome')
         context['now'] = timezone.now()
         return context
+    
+class InscritoDetailView(LoginRequiredMixin, UpdateView):
+    model = DadosDoAluno
+    fields = ['status']
+    context_object_name = 'aluno'
+    template_name = 'update_aluno.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['aluno'] = self.object
+        return context
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Status de inscrição atualizado com sucesso")
+        self.object.status = form.cleaned_data['status']
+        self.object.save(update_fields = ['status'])
+        return redirect('curso_detail', self.object.curso.id)
+    
+def download_csv_file(request):
+    aprovados = DadosDoAluno.objects.filter(status='A')
+
+    header = (
+        'username', 
+        'password', 
+        'firstname', 
+        'lastname',
+        'email',
+        'city',
+        'auth',
+        'course1'
+    )
+
+
+    # Escrita do arquivo .csv
+    dir_path = os.path.join(settings.MEDIA_ROOT, 'outputs')
+    
+    if not os.path.isdir(dir_path):
+        os.mkdir(dir_path)
+
+    file_path = dir_path + '/' + aprovados.last().curso.nome_breve + aprovados.last().curso.data_inicio.strftime('%Y%m%d') + '.csv'
+
+    with open(file_path, 'w') as f:
+        writer = csv.DictWriter(f, fieldnames=header)
+        writer.writeheader()
+
+        for aprovado in aprovados:
+            writer.writerow({
+                'username': aprovado.cpf,
+                'password': aprovado.senha_inicial,
+                'firstname': aprovado.nome,
+                'lastname': aprovado.sobrenome,
+                'email': aprovado.email,
+                'city': aprovado.cidade,
+                'auth': 'manual',
+                'course1': aprovado.curso.nome_breve
+            })
+
+    f.close()
+
+    return FileResponse(open(file_path, 'rb'))

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% load custom_tags %}
+
+{% block content %}
+
+<div class="
+    border p-4 w-[992px] absolute left-[50%] -translate-x-1/2 mt-16 pb-16 flex flex-col gap-4
+    [&>div]:flex [&>div]:gap-8
+">
+    <div class="bg-redCead p-4">
+        <h2 class="text-white font-bold text-xl">Detalhes do(a) Candidato(a)</h2>
+    </div>
+    <div>
+        <div><span class="font-bold">CPF</span>: {{aluno.cpf|format_cpf}}</div>
+        <div><span class="font-bold">Data de Nascimento</span>: {{aluno.data_nascimento|date:"d/m/Y"}}</div>
+        <div><span class="font-bold">Possui SIGA?</span> {% if aluno.siga %}Sim{% else %}Não{% endif %}</div>
+    </div>
+    <div>
+        <div><span class="font-bold">Curso</span>: {{aluno.curso}}</div>
+    </div>
+    <div>
+        <div><span class="font-bold">Nome</span>: {{aluno.nome}}</div>
+        <div><span class="font-bold">Sobrenome</span>: {{aluno.sobrenome}}</div>
+    </div>
+    <div>
+        <div><span class="font-bold">E-mail</span>: {{aluno.email}}</div>
+        <div><span class="font-bold">Telefone</span>: {{aluno.telefone|format_telefone}}</div>
+    </div>
+    
+    {% if aluno.documentacao %}
+    <div>
+        <div><span class="font-bold">Documentação</span>: <a class="text-redCead" href="/media/{{aluno.documentacao}}" target="_blank">Visualizar</a></div>
+    </div>
+    {% endif %}
+
+    <div class="bg-redCead p-4">
+        <h3 class="text-white text-lg">Dados Adicionais</h3>
+    </div>
+
+    <h4 class="border-b border-redCead">Endereço Residencial</h4>
+
+    <div>
+        <div><span class="font-bold">CEP</span>: {{aluno.cep|format_cep}}</div>
+        <div><span class="font-bold">Cidade</span>: {{aluno.cidade}}</div>
+        <div><span class="font-bold">UF</span>: {{aluno.uf}}</div>
+    </div>
+    <div>
+        <div><span class="font-bold">Logradouro</span>: {{aluno.logradouro}}</div>
+        <div><span class="font-bold">Número</span>: {{aluno.numero}}</div>
+    </div>
+    <div>
+        <div><span class="font-bold">Complemento</span>: {{aluno.complemento}}</div>
+        <div><span class="font-bold">Bairro</span>: {{aluno.bairro}}</div>
+    </div>
+
+    <div class="bg-redCead p-4">
+        <h3 class="text-white text-lg">Informações de Vínculo do Servidor com a Prefeitura</h3>
+    </div>
+
+    <div>
+        <div><span class="font-bold">Cargo</span>: {{aluno.cargo}}</div>
+    </div>
+    <div>
+        <div><span class="font-bold">Secrateria</span>: {{aluno.secretaria}}</div>
+        <div><span class="font-bold">Matrícula</span>: {{aluno.matricula}}</div>
+    </div>
+    <form method="post" class="flex gap-4 items-center [&>select]:border [&>select]:border-zinc-400 [&>select]:outline-redCead [&>select]:p-2 [&>select]:text-lg">{% csrf_token %}
+        {{form.status}}
+        <button class="text-white font-bold bg-redCead py-2 w-20 hover:brightness-110" type="submit">Atualizar</button>
+    </form>
+</div>
+
+{% endblock %}

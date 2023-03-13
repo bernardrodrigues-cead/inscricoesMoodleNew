@@ -30,7 +30,8 @@
         </div>
 
         <div>
-            <div class="[&>input]:ml-2 [&>input]:w-20">{{form.vagas.label}}{{form.vagas}}</div>
+            <div class="[&>input]:w-40">Limite no número de vagas? {{form.limite_vagas}}</div>
+            <div style="display: none;" id="vagas" class="transition duration-1000 [&>input]:ml-2 [&>input]:w-20">{{form.vagas.label}}{{form.vagas}}</div>
         </div>
         
         <div class="[&>div>input]:ml-2">
@@ -49,5 +50,18 @@
         </div>
     </form>
 </main>
+
+<script>
+    $('#vagas').css('opacity', '0').css('transform', 'translateX(75%)').hide(0);
+    
+    $('#id_limite_vagas').change(function(){
+        console.log($('#id_limite_vagas').val())
+        if($('#id_limite_vagas').val() == 'True'){
+            $('#vagas').show(0).css('opacity', '1').css('transform', 'translateX(0)');
+        }else{
+            $('#vagas').css('opacity', '0').css('transform', 'translateX(75%)').delay(1000).hide(0);
+        }
+    })
+</script>
 
 {% endblock %}

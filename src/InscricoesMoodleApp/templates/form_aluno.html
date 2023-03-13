@@ -77,8 +77,6 @@
             <div>{{form.complemento.label}}{{form.complemento}}</div>
             <div>{{form.bairro.label}}{{form.bairro}}</div>
         </div>
-        <div>
-        </div>
         
         <div class="bg-redCead p-4">
             <h3 class="text-white text-lg">Informações de Vínculo do Servidor com a Prefeitura</h3>
@@ -98,9 +96,9 @@
         </button>
     </form>
 {% else %}
-    <span>
+    <div class="ml-[50vw] -translate-x-1/2 text-center mt-16">
         No momento, o CEAD não está oferecendo cursos nessa modalidade de inscrição.
-    </span>
+    </div>
 {% endif %}
 </main>
 
@@ -143,16 +141,6 @@
             $('#id_uf').val(data.uf);
             $('#id_cidade').val(data.localidade);
             $('#id_uf').val(data.uf).trigger('change');
-        }
-    })
-
-    $('#id_possui_siape').change(function(){
-        if($('#id_possui_siape').val() == 'True'){
-            $('#id_siape').show(0).css('opacity', '1').css('transform', 'translateX(0)');
-            $('#siape').show(0).css('opacity', '1').css('transform', 'translateX(0)');
-        }else{
-            $('#id_siape').css('opacity', '0').css('transform', 'translateX(-110%)').delay(1000).hide(0);
-            $('#siape').css('opacity', '0').css('transform', 'translateX(-110%)').delay(1000).hide(0);
         }
     })
 

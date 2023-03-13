@@ -15,14 +15,17 @@ tailwind.config = {
                         opacity: 0,
                         transform: 'translateX(-50%)'
                     },
-                    '100%': {
+                    '10%': {
                         opacity: 1,
                         transform: 'translateX(0)'
+                    },
+                    '100%': {
+                        opacity: 0
                     }
                 }
             },
             animation: {
-                'appearFromLeft': 'appearFromLeft 0.7s linear forwards'
+                'appearFromLeft': 'appearFromLeft 10s linear forwards'
             },
             filter: {
                 blackToCead: 'invert(13%) sepia(84%) saturate(5202%) hue-rotate(351deg) brightness(76%) contrast(83%)'

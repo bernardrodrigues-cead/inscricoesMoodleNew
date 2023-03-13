@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
+
+{% include 'includes/messages.html' %}
 
 <main class="mb-16">
     <div 
@@ -8,8 +12,6 @@
         class="
             ml-[50%] -translate-x-1/2 mt-16 flex flex-col gap-4 border p-4 shadow-md
             [&>div]:flex [&>div]:justify-between [&>div]:gap-2
-            {% comment %} [&>div>div>input]:border [&>div>div>input]:p-2 focus:[&>div>div>input]:outline-redCead 
-            [&>div>div>select]:p-2 [&>div>div>select]:outline-redCead [&>div>div>select]:ml-2 {% endcomment %}
         "
     >{% csrf_token %}
         {% include 'includes/errors.html' %}
@@ -27,12 +29,14 @@
             <div><span class="font-bold">Anexar Documentação? </span>{% if curso.anexar_documentacao %}Sim{% else %}Não{% endif %}</div>
         </div>
 
+        {% if curso.limite_vagas %}
         <div>
             <div><span class="font-bold">Total de Vagas: </span>{{curso.vagas}}</div>
             {% if now|date:"Y-m-d" >= curso.matricula_inicio|date:"Y-m-d"%}
             <div><span class="font-bold">Total de Inscritos: </span>{{curso.dadosdoaluno_set.all|length}}</div>
             {% endif %}
         </div>
+        {% endif %}
         
         <div>
             <div><span class="font-bold">Início das Inscrições: </span>{{curso.matricula_inicio|date:"d/m/Y"}}</div>
@@ -66,8 +70,12 @@
 
     {% if inscritos|length > 0 %}
     <div class="ml-[50%] -translate-x-1/2 mt-16 flex flex-col gap-4 border p-4 shadow-md">
-        <div class="bg-redCead p-4">
+        <div class="bg-redCead p-4 flex justify-between items-center">
             <h2 class="text-white font-bold text-xl">Lista de Inscritos</h2>
+            <div id="csv-download" class="flex items-center gap-2 border border-yellowCead p-1 rounded hover:cursor-pointer">
+                <img src={% static 'assets/download_arrow.svg' %} width="20"/>
+                <a href={% url 'download_csv' %} class="text-yellowCead">Baixar CSV</a>
+            </div>
         </div>
         {% for inscrito in inscritos %}
         <div class="flex justify-between items-center">
@@ -90,7 +98,7 @@
                         {% endif %}
                     "></div>
                 </div>
-                <a class="bg-redCead text-white p-2 hover:cursor-pointer hover:brightness-110">Detalhes</a>
+                <a href={% url 'aluno_detail' inscrito.id %} class="bg-redCead text-white p-2 hover:cursor-pointer hover:brightness-110">Detalhes</a>
             </div>
         </div>
         {% endfor %}

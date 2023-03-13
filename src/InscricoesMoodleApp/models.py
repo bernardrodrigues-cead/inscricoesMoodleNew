@@ -18,7 +18,8 @@ class Curso(models.Model):
     data_fim = models.DateTimeField(verbose_name="Fim das Atividades")
     matricula_inicio = models.DateTimeField(verbose_name="Início das Inscrições")
     matricula_fim = models.DateTimeField(verbose_name="Fim das Inscrições")
-    vagas = models.IntegerField(verbose_name="Número de Vagas")
+    limite_vagas = models.BooleanField()
+    vagas = models.IntegerField(verbose_name="Número de Vagas", null=True, blank=True)
     ativo = models.BooleanField(default=True)
     
     anexar_documentacao = models.BooleanField(verbose_name="Anexar Documentação", default=False, null=True, blank=True)
@@ -28,8 +29,8 @@ class Curso(models.Model):
 
 class DadosDoAluno(models.Model):
     STATUS_CHOICES = (
-        ('A', 'Aprovado'),
-        ('R', 'Reprovado'),
+        ('A', 'Aprovado(a)'),
+        ('R', 'Reprovado(a)'),
         ('W', 'Aguardando Avaliação')
     )
     
@@ -65,3 +66,7 @@ class DadosDoAluno(models.Model):
 
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='W')
     data_cadastro = models.DateTimeField(auto_now_add=True)
+    senha_inicial = models.CharField(max_length=8)
+
+    def __str__(self):
+        return "{} {}".format(self.nome, self.sobrenome)
