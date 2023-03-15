@@ -17,16 +17,26 @@
     <script src={% static 'js/jquery.js' %}></script>
 </head>
 <body class="text-eigengrau font-roboto">
-    <header class="h-16 border-b shadow-md flex items-center justify-between p-8">
-        <a href="{% url 'index' %}" class="flex items-center gap-4">
-            <img src="{% static 'assets/cead_logo.png' %}" alt="Logo do CEAD" class="h-10">
-            <h1 class="text-xl">CEAD | Inscrição</h1>
+    <header class="
+        h-16 border-b shadow-md flex items-center justify-between p-4
+        xl:p-8
+    ">
+        <a href="{% url 'index' %}" class="
+            flex items-center gap-2 
+            xl:gap-4
+        ">
+            <img 
+                src="{% static 'assets/cead_logo.png' %}" 
+                alt="Logo do CEAD" 
+                class="w-8 xl:w-10 h-auto"
+            >
+            <h1 class="text-sm xl:text-xl">CEAD | Inscrição</h1>
         </a>
 
         {% if not user.is_anonymous %}
-        <div class="flex gap-4">
-            <span>Usuário: {{user}}</span>
-            <a class="text-redCead hover:underline" href="{% url 'logout' %}">Log Out</a>
+        <div class="flex flex-col xl:flex-row items-end gap-0 xl:gap-4">
+            <span class="text-xs xl:text-base">Usuário: {{user}}</span>
+            <a class="text-xs xl:text-base text-redCead hover:underline" href="{% url 'logout' %}">Log Out</a>
         </div>
 
         {% endif %}

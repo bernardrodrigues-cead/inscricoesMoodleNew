@@ -4,7 +4,10 @@
 
 {% include 'includes/messages.html' %}
 
-<main class="mt-16 flex justify-center gap-32">
+<main class="
+    mt-16 flex flex-col items-center justify-center gap-16
+    xl:flex-row xl:gap-32
+">
     {% include "includes/menu_button.html" with url='aluno_cadastro' name='Inscrição' icon='assets/curso.png'%}
 
     {% include "includes/menu_button.html" with url='administracao' name='Administração' icon='assets/disciplina.png' %}

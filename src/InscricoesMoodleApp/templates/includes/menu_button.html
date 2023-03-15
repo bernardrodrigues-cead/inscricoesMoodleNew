@@ -2,15 +2,37 @@
 
 
 
-<a  href="{% url url %}" class="h-[70vh] w-52 border shadow-lg flex flex-col justify-between group overflow-hidden hover:cursor-pointer hover:border-yellowCead">
-    <div class="triangle trasition-transform duration-1000 group-hover:scale-[3]">
-        <div class="h-16 bg-yellowCead"></div>
-        <div class="h-0 w-0 border-r-[calc(52px*3.98)] border-r-yellowCead border-b-[54px] border-b-transparent group-hover:-translate-y-[1px]"></div>
+<a  
+    href="{% url url %}" 
+    class="
+        group
+        h-48 w-4/5 border shadow-lg flex justify-center overflow-hidden relative
+        xl:h-[70vh] xl:w-52 xl:flex-col xl:justify-between
+        xl:hover:cursor-pointer xl:hover:border-yellowCead
+    "
+>
+    <div class="xl:trasition-transform xl:duration-1000 xl:group-hover:scale-[3]">
+        <div class="h-16 bg-yellowCead w-[80vw]"></div>
+        <div class="
+            h-0 w-0 border-r-[80vw] border-r-yellowCead border-b-[54px] border-b-transparent 
+            xl:border-r-[calc(52px*3.98)]
+            group-hover:-translate-y-[1px]
+        "></div>
     </div>
     
-    <img src="{% static icon %}" class="transition-transform duration-1000 group-hover:-translate-y-16 group-hover:scale-125" />
+    <img 
+        src="{% static icon %}" 
+        class="
+            w-36 h-auto transition-transform duration-1000 absolute
+            xl:w-auto xl:relative 
+            xl:group-hover:-translate-y-16 xl:group-hover:scale-125
+        " 
+    />
 
-    <div class="h-16 bg-redCead flex items-center justify-center transition-all duration-1000">
+    <div class="
+        h-12 w-full bg-redCead flex items-center justify-center transition-all duration-1000 absolute bottom-0
+        xl:h-16 xl:relative
+    ">
         <span class="text-2xl font-[500] text-white">
             {{name}}
         </span>

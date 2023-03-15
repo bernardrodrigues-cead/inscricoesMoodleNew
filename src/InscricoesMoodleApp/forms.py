@@ -40,7 +40,7 @@ class AlunosForm(forms.ModelForm):
             'data_nascimento': forms.TextInput(attrs={'type': 'date'}),
             'nome': forms.TextInput(attrs={'placeholder': 'Primeiro nome ou nome social'}),
             'sobrenome': forms.TextInput(attrs={'placeholder': 'Último nome'}),
-            'email': forms.TextInput(attrs={'placeholder': 'Necessário para confirmação de matrícula'}),
+            'email': forms.TextInput(attrs={'placeholder': 'Para confirmação de matrícula'}),
             'cidade': forms.TextInput(),
             'telefone': forms.TextInput(attrs={'placeholder': 'Somente números'}),
             'cep': forms.TextInput(attrs={'placeholder': 'Somente números'}),
