@@ -20,7 +20,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 def index(request):
     return render(request, 'index.html')
 
-@login_required(login_url='/accounts/login/')
+@login_required(login_url='/inscricoes_critt/accounts/login/')
 def Administracao(request):
     return render(request, 'administracao.html')
 
@@ -98,10 +98,10 @@ def thanks(request):
     return render(request, 'thanks.html')
 
 class CadastroCursoCreateView(LoginRequiredMixin, CreateView):
-    login_url = "/accounts/login"
+    login_url = "/inscricoes_critt/accounts/login"
     form_class = CursosForm
     template_name = "form_curso.html"
-    success_url = "/"
+    success_url = "/inscricoes_critt/"
 
     def form_valid(self, form):
         if(form.cleaned_data['data_inicio'] > form.cleaned_data['data_fim']):
@@ -125,7 +125,7 @@ class CadastroCursoCreateView(LoginRequiredMixin, CreateView):
         return super().form_invalid(form)
     
 class CursoListView(LoginRequiredMixin, ListView):
-    login_url = "/accounts/login"
+    login_url = "/inscricoes_critt/accounts/login"
     model = Curso
     template_name = 'list_curso.html'
     context_object_name = 'cursos'
@@ -140,6 +140,7 @@ class CursoDetailView(LoginRequiredMixin, DetailView):
     model = Curso
     context_object_name = 'curso'
     template_name = 'detail_curso.html'
+    login_url = "/inscricoes_critt/accounts/login"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -162,6 +163,7 @@ class InscritoDetailView(LoginRequiredMixin, UpdateView):
     fields = ['status']
     context_object_name = 'aluno'
     template_name = 'update_aluno.html'
+    login_url = "/inscricoes_critt/accounts/login"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -174,8 +176,13 @@ class InscritoDetailView(LoginRequiredMixin, UpdateView):
         self.object.save(update_fields = ['status'])
         return redirect('curso_detail', self.object.curso.id)
     
-def download_csv_file(request):
-    aprovados = DadosDoAluno.objects.filter(status='A')
+def download_csv_file(request, curso_id):
+    curso = Curso.objects.get(id=curso_id)
+    aprovados = curso.dadosdoaluno_set.filter(status='A')
+    
+    if(not aprovados):
+        messages.error(request, "Nenhum candidato aprovado até a presente dada")
+        return redirect('curso_detail', curso.id)
 
     header = (
         'username', 

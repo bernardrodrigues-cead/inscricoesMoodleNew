@@ -11,5 +11,5 @@ urlpatterns = [
     path('curso/<int:pk>/', views.CursoDetailView.as_view(), name='curso_detail'),
     path('administracao/', views.Administracao, name='administracao'),
 
-    path('download_csv/', views.download_csv_file, name="download_csv")
+    path('download_csv/<int:curso_id>/', views.download_csv_file, name="download_csv")
 ]

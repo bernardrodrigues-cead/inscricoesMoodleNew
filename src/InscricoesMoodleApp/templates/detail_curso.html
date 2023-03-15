@@ -74,7 +74,7 @@
             <h2 class="text-white font-bold text-xl">Lista de Inscritos</h2>
             <div id="csv-download" class="flex items-center gap-2 border border-yellowCead p-1 rounded hover:cursor-pointer">
                 <img src={% static 'assets/download_arrow.svg' %} width="20"/>
-                <a href={% url 'download_csv' %} class="text-yellowCead">Baixar CSV</a>
+                <a href={% url 'download_csv' curso.id %} class="text-yellowCead">Baixar CSV</a>
             </div>
         </div>
         {% for inscrito in inscritos %}
