@@ -4,6 +4,8 @@ from InscricoesMoodleApp.models import Curso, DadosDoAluno
 from django.utils import timezone
 
 class AlunosForm(forms.ModelForm):
+    email_confirmacao = forms.EmailField(label="Confirmar e-mail")
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['curso'].queryset = Curso.objects.filter(

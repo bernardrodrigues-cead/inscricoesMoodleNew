@@ -54,9 +54,16 @@
                 <label class="w-16" for="email">{{form.email.label}}</label>
                 {{form.email}}
             </div>
-            <div>{{form.telefone.label}}{{form.telefone}}</div>
         </div>
 
+        <div>
+            <div class="[&>input]:w-[400px]">
+                <label class="w-16" for="email">{{form.email_confirmacao.label}}</label>
+                {{form.email_confirmacao}}
+            </div>
+            <div>{{form.telefone.label}}{{form.telefone}}</div>
+        </div>
+        
         <div>
             <div id="documentacao" style="display: none;" class="transition-all duration-1000 [&>input]:w-[500px]">{{form.documentacao.label}}{{form.documentacao}}</div>
         </div>

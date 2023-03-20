@@ -27,7 +27,7 @@ def Administracao(request):
 class CadastroAlunoCreateView(CreateView):
     form_class = AlunosForm
     template_name = 'form_aluno.html'
-    success_url = '/thanks'
+    success_url = '/inscricoes_critt/thanks'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -41,6 +41,10 @@ class CadastroAlunoCreateView(CreateView):
         return context
     
     def form_valid(self, form):
+        if form.cleaned_data['email'] != form.cleaned_data['email_confirmacao']:
+            messages.error(self.request, "Campos de e-mail diferentes")
+            return self.form_invalid(form)
+
         pwd = PasswdGen()
         senha = pwd.run()
         new_data = form.save(commit=False)
@@ -86,7 +90,7 @@ class CadastroAlunoCreateView(CreateView):
         recipients = [form.cleaned_data['email']]
 
         new_email = SendEmail(subject=subject, message=message, recipients=recipients)
-        new_email.send()
+        # new_email.send()
 
         return super().form_valid(form)
 
@@ -223,3 +227,79 @@ def download_csv_file(request, curso_id):
     f.close()
 
     return FileResponse(open(file_path, 'rb'))
+
+def download_csv_ordenado(request, curso_id, ordem):
+    curso = Curso.objects.get(id=curso_id)
+    if ordem == 'alfabetica':
+        aprovados = curso.dadosdoaluno_set.filter(status='A').order_by('sobrenome').order_by('nome')
+    elif ordem == 'inscritos':
+        aprovados = curso.dadosdoaluno_set.filter(status='A').order_by('data_cadastro')
+    
+    if(not aprovados):
+        messages.error(request, "Nenhum candidato aprovado até a presente dada")
+        return redirect('curso_detail', curso.id)
+
+    header = (
+        'cpf',
+        'data_nascimento',
+        'nome',
+        'sobrenome',
+        'email',
+        'curso',
+        'cidade',
+        'telefone',
+        'cep',
+        'logradouro',
+        'numero',
+        'complemento',
+        'bairro',
+        'uf',
+        'siga',
+        'documentacao',
+        'secretaria',
+        'cargo',
+        'matricula',
+        'data_cadastro'
+    )
+
+
+    # Escrita do arquivo .csv
+    dir_path = os.path.join(settings.MEDIA_ROOT, 'outputs')
+    
+    if not os.path.isdir(dir_path):
+        os.mkdir(dir_path)
+
+    file_path = dir_path + '/' + aprovados.last().curso.nome_breve + aprovados.last().curso.data_inicio.strftime('%Y%m%d') + ordem + '.csv'
+
+    with open(file_path, 'w') as f:
+        writer = csv.DictWriter(f, fieldnames=header)
+        writer.writeheader()
+
+        for aprovado in aprovados:
+            writer.writerow({
+                'cpf': aprovado.cpf,
+                'data_nascimento': aprovado.data_nascimento,
+                'nome': aprovado.nome,
+                'sobrenome': aprovado.sobrenome,
+                'email': aprovado.email,
+                'curso': aprovado.curso,
+                'cidade': aprovado.cidade,
+                'telefone': aprovado.telefone,
+                'cep': aprovado.cep,
+                'logradouro': aprovado.logradouro,
+                'numero': aprovado.numero,
+                'complemento': aprovado.complemento,
+                'bairro': aprovado.bairro,
+                'uf': aprovado.uf,
+                'siga': aprovado.siga,
+                'documentacao': aprovado.documentacao,
+                'secretaria': aprovado.secretaria,
+                'cargo': aprovado.cargo,
+                'matricula': aprovado.matricula,
+                'data_cadastro': aprovado.data_cadastro.strftime("%d/%m/%Y %H:%M:%S")
+            })
+
+    f.close()
+
+    return FileResponse(open(file_path, 'rb'))
+

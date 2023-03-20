@@ -70,17 +70,34 @@
         </div>
     </div>
 
+    <div class="
+        w-[360px] ml-[50%] -translate-x-1/2 mt-8 flex flex-col gap-4 border p-4 shadow-md
+        xl:w-auto
+    ">
+        <div class="bg-redCead p-4 flex justify-between items-center">
+            <h2 class="text-white font-bold text-base xl:text-xl">Relatórios</h2>
+        </div>
+        <div class="
+            flex flex-col gap-1
+            xl:flex-row
+            [&>a]:w-full [&>a]:border-2 [&>a]:border-redCead [&>a]:text-redCead [&>a]:rounded [&>a]:p-2 [&>a]:text-center
+            xl:hover:[&>a]:text-white xl:hover:[&>a]:bg-redCead
+        ">
+            <a href={% url 'download_csv_ordenado' curso_id=curso.id ordem='alfabetica' %}>Ordem Alfabética</a>
+            <a href={% url 'download_csv_ordenado' curso_id=curso.id ordem='inscritos' %}>Ordem de Inscrição</a>
+            <a href={% url 'download_csv' curso.id %}>Carga Moodle</a>
+        </div>
+    </div>
+
+
+
     {% if inscritos|length > 0 %}
     <div class="
-        w-[360px] ml-[50%] -translate-x-1/2 mt-16 flex flex-col gap-4 border p-4 shadow-md
+        w-[360px] ml-[50%] -translate-x-1/2 mt-8 flex flex-col gap-4 border p-4 shadow-md
         xl:w-auto
     ">
         <div class="bg-redCead p-4 flex justify-between items-center">
             <h2 class="text-white font-bold text-base xl:text-xl">Lista de Inscritos</h2>
-            <div id="csv-download" class="flex items-center gap-2 border border-yellowCead p-1 rounded hover:cursor-pointer">
-                <img src={% static 'assets/download_arrow.svg' %} width="20"/>
-                <a href={% url 'download_csv' curso.id %} class="text-yellowCead">Baixar CSV</a>
-            </div>
         </div>
         {% for inscrito in inscritos %}
         <div class="flex justify-between items-center text-xs xl:text-base">
