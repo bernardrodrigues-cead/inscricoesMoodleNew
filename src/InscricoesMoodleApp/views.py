@@ -16,6 +16,36 @@ from django.db.models import Case, When
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+def AprovadoMail(curso, cpf, senha, email):
+    ### SEND EMAIL ###
+    subject = "CEAD | UFJF - Orientações para Acesso à Plataforma Moodle"
+    
+    message = """
+    Prezado(a),
+
+    Bem-vindo(a) ao Cead UFJF!
+    Você foi inscrito(a) no curso {}. 
+    Ao final das inscrições, para acessar sua conta na plataforma Moodle, verifique as informações abaixo:
+
+    Acesse: http://ead.cead.ufjf.br (ao final do período de inscrição)
+    Identificação: {}
+    Senha: {}
+
+    Em caso de dúvidas referentes à plataforma, entre em contato com suporte.cead@ufjf.br
+    Para demais informações, entre em contato com a coordenação do curso.
+
+    Atenciosamente,
+    SAUT - Serviço de Atendimento ao Usuário
+    Coordenação Tecnológica - CEAD | UFJF
+
+    """.format(curso, cpf, senha)
+
+    recipients = [email]
+
+    new_email = SendEmail(subject=subject, message=message, recipients=recipients)
+    new_email.send()
+
+
 # Create your views here.
 def index(request):
     return render(request, 'index.html')
@@ -63,34 +93,6 @@ class CadastroAlunoCreateView(CreateView):
             new_data.documentacao.name = dir_name + '/' + file_name
         
         new_data.save()
-
-        ### SEND EMAIL ###
-        subject = "CEAD | UFJF - Orientações para Acesso à Plataforma Moodle"
-        
-        message = """
-        Prezado(a),
-
-        Bem-vindo(a) ao Cead UFJF!
-        Você foi inscrito(a) no curso {}. 
-        Ao final das inscrições, para acessar sua conta na plataforma Moodle, verifique as informações abaixo:
-
-        Acesse: http://ead.cead.ufjf.br (ao final do período de inscrição)
-        Identificação: {}
-        Senha: {}
-
-        Em caso de dúvidas referentes à plataforma, entre em contato com suporte.cead@ufjf.br
-        Para demais informações, entre em contato com a coordenação do curso.
-
-        Atenciosamente,
-        SAUT - Serviço de Atendimento ao Usuário
-        Coordenação Tecnológica - CEAD | UFJF
-
-        """.format(form.cleaned_data['curso'], form.cleaned_data['cpf'].replace('.', '').replace('-', ''), senha)
-
-        recipients = [form.cleaned_data['email']]
-
-        new_email = SendEmail(subject=subject, message=message, recipients=recipients)
-        # new_email.send()
 
         return super().form_valid(form)
 
@@ -178,6 +180,9 @@ class InscritoDetailView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "Status de inscrição atualizado com sucesso")
         self.object.status = form.cleaned_data['status']
         self.object.save(update_fields = ['status'])
+        if self.object.status == 'A':
+            AprovadoMail(self.object.curso.nome, self.object.cpf, self.object.senha_inicial, self.object.email)
+
         return redirect('curso_detail', self.object.curso.id)
     
 def download_csv_file(request, curso_id):

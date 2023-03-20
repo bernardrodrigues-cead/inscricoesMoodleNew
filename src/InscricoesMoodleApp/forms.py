@@ -41,7 +41,7 @@ class AlunosForm(forms.ModelForm):
             'cpf': forms.TextInput(attrs={'placeholder': 'Somente números'}),
             'data_nascimento': forms.TextInput(attrs={'type': 'date'}),
             'nome': forms.TextInput(attrs={'placeholder': 'Primeiro nome ou nome social'}),
-            'sobrenome': forms.TextInput(attrs={'placeholder': 'Último nome'}),
+            'sobrenome': forms.TextInput(attrs={'placeholder': 'Demais sobrenomes'}),
             'email': forms.TextInput(attrs={'placeholder': 'Para confirmação de matrícula'}),
             'cidade': forms.TextInput(),
             'telefone': forms.TextInput(attrs={'placeholder': 'Somente números'}),
