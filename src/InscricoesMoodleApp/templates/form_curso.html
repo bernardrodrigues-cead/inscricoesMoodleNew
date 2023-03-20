@@ -8,9 +8,12 @@
     <form 
         method="post" 
         class="
-            ml-[50%] -translate-x-1/2 mt-16 flex flex-col gap-4 border p-4 shadow-md
-            [&>div]:flex [&>div]:justify-between [&>div]:gap-2
-            [&>div>div>input]:border [&>div>div>input]:p-2 focus:[&>div>div>input]:outline-redCead 
+            w-11/12 mt-16 flex flex-col gap-4 border p-4 shadow-md ml-[50%] -translate-x-1/2
+            xl:w-auto
+            [&>div]:flex [&>div]:flex-col [&>div]:justify-between [&>div]:gap-2
+            xl:[&>div]:flex-row
+            [&>div>div>input]:border [&>div>div>input]:p-2 focus:[&>div>div>input]:outline-redCead [&>div>div>select]:text-xs
+            xl:[&>div>div>select]:text-base
             [&>div>div>select]:p-2 [&>div>div>select]:outline-redCead [&>div>div>select]:ml-2
         "
     >{% csrf_token %}
@@ -21,7 +24,7 @@
         </div>
         <div>
             <div class="w-full [&>input]:w-full">{{form.nome.label}}{{form.nome}}</div>
-            <div>{{form.nome_breve.label}}{{form.nome_breve}}</div>
+            <div class="flex flex-col">{{form.nome_breve.label}}{{form.nome_breve}}</div>
         </div>
         
         <div>
@@ -35,18 +38,18 @@
         </div>
         
         <div class="[&>div>input]:ml-2">
-            <div>{{form.matricula_inicio.label}}{{form.matricula_inicio}}</div>
-            <div>{{form.matricula_fim.label}}{{form.matricula_fim}}</div>
+            <div class="flex flex-col xl:flex-row">{{form.matricula_inicio.label}}{{form.matricula_inicio}}</div>
+            <div class="flex flex-col xl:flex-row">{{form.matricula_fim.label}}{{form.matricula_fim}}</div>
         </div>
 
         <div class="[&>div>input]:ml-2">
-            <div>{{form.data_inicio.label}}{{form.data_inicio}}</div>
-            <div>{{form.data_fim.label}}{{form.data_fim}}</div>
+            <div class="flex flex-col xl:flex-row">{{form.data_inicio.label}}{{form.data_inicio}}</div>
+            <div class="flex flex-col xl:flex-row">{{form.data_fim.label}}{{form.data_fim}}</div>
         </div>
 
         <div class="flex justify-start">
-            <button class="text-white font-bold bg-redCead py-2 w-20 hover:brightness-110" type="submit">Enviar</button>
-            <a href={% url 'administracao' %} class="text-center text-white font-bold bg-zinc-500 py-2 w-20 hover:brightness-110">Cancelar</a>
+            <button class="text-white font-bold bg-redCead py-2 w-20 xl:hover:brightness-110" type="submit">Enviar</button>
+            <a href={% url 'administracao' %} class="text-center text-white font-bold bg-zinc-500 py-2 w-20 xl:hover:brightness-110">Cancelar</a>
         </div>
     </form>
 </main>

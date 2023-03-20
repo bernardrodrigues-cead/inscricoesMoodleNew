@@ -5,30 +5,30 @@
 {% block content %}
     <main class="flex flex-col gap-1 absolute left-1/2 -translate-x-1/2 mt-16">
         <div class="flex gap-1">
-            <div class="w-[500px] px-2 py-1 bg-redCead">
-                <span class="text-white">Nome do Curso</span>
+            <div class="w-[150px] xl:w-[500px] px-2 py-1 bg-redCead items-center">
+                <span class="text-white text-xs xl:text-base">Nome do Curso</span>
             </div>
-            <div class="w-[80px] p-1 bg-redCead flex justify-center">
-                <span class="text-white">Inscritos</span>
+            <div class="w-[57px] xl:w-[80px] p-1 bg-redCead flex justify-center items-center">
+                <span class="text-white text-xs xl:text-base">Inscritos</span>
             </div>
-            <div class="w-[140px] p-1 bg-redCead flex justify-center">
-                <span class="text-white">Situação</span>
+            <div class="w-[64px] xl:w-[140px] p-1 bg-redCead flex justify-center items-center">
+                <span class="text-white text-xs xl:text-base">Situação</span>
             </div>
-            <div class="w-[80px] p-1 bg-redCead flex justify-center">
-                <span class="text-white">Detalhes</span>
+            <div class="w-[57px] xl:w-[80px] p-1 bg-redCead flex justify-center items-center">
+                <span class="text-white text-xs xl:text-base">Detalhes</span>
             </div>
         </div>
         
         {% for curso in cursos %}
         <div class="flex gap-1 group">
-            <div class="w-[500px] border px-2 py-1 group-hover:bg-zinc-100">
-                <span>{{curso.nome}}</span>
+            <div class="w-[150px] xl:w-[500px] border px-2 py-1 group-hover:bg-zinc-100 flex items-center">
+                <span class="text-xs xl:text-base">{{curso.nome}}</span>
             </div>
-            <div class="w-[80px] border p-1 flex justify-center group-hover:bg-zinc-100">
-                <span>{{curso.dadosdoaluno_set.all|length}}</span>
+            <div class="w-[57px] xl:w-[80px] border p-1 flex justify-center group-hover:bg-zinc-100 flex items-center">
+                <span class="text-xs xl:text-base">{{curso.dadosdoaluno_set.all|length}}</span>
             </div>
-            <div class="w-[140px] border p-1 flex justify-center group-hover:bg-zinc-100">
-                <span>
+            <div class="w-[64px] xl:w-[140px] border p-1 flex justify-center group-hover:bg-zinc-100 flex items-center">
+                <span class="text-xs xl:text-base">
                     {% if now|date:"Y-m-d" < curso.matricula_inicio|date:"Y-m-d" %}
                     Cadastrado
                     {% elif now|date:"Y-m-d" >= curso.matricula_inicio|date:"Y-m-d" and now|date:"Y-m-d" <= curso.matricula_fim|date:"Y-m-d" %}
@@ -42,7 +42,7 @@
                     {% endif %}
                 </span>
             </div>
-            <div class="w-[80px] border p-1 flex justify-center group-hover:bg-zinc-100">
+            <div class="w-[57px] xl:w-[80px] border p-1 flex justify-center group-hover:bg-zinc-100 flex items-center">
                 <a 
                     href={% url 'curso_detail' curso.id %}
                 >
