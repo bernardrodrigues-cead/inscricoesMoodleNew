@@ -45,6 +45,37 @@ def AprovadoMail(curso, cpf, senha, email):
     new_email = SendEmail(subject=subject, message=message, recipients=recipients)
     new_email.send()
 
+def ReprovadoMail(email):
+    ### SEND EMAIL ###
+    subject = "CEAD | UFJF - Orientações para Acesso à Plataforma Moodle"
+    
+    message = """
+    Prezado(a),
+
+    Informamos que a sua inscrição foi Reprovada no curso de curta duração Construindo Cidades Resilientes-MCR2030 
+    promovido pela Universidade Federal de Juiz de Fora em virtude dos critérios previsto de público-alvo ou limitação 
+    de vagas.
+    Em caso de dúvidas encaminhe um e-mail para cidadesresilientes@engenharia.ufjf.br informando todos os dados abaixo:
+
+    Nome completo:
+    E-mail informado no cadastro:
+    CPF:
+    Cidade:
+    Vínculo do Servidor com a Prefeitura:
+    Cargo:
+    Secretaria:
+    Matrícula:
+
+    Atenciosamente
+
+    Comissão Organizadora
+    """
+
+    recipients = [email]
+
+    new_email = SendEmail(subject=subject, message=message, recipients=recipients)
+    new_email.send()
+
 
 # Create your views here.
 def index(request):
@@ -182,6 +213,8 @@ class InscritoDetailView(LoginRequiredMixin, UpdateView):
         self.object.save(update_fields = ['status'])
         if self.object.status == 'A':
             AprovadoMail(self.object.curso.nome, self.object.cpf, self.object.senha_inicial, self.object.email)
+        elif self.object.status == 'R':
+            ReprovadoMail(self.object.email)
 
         return redirect('curso_detail', self.object.curso.id)
     
