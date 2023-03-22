@@ -33,6 +33,7 @@ class AlunosForm(forms.ModelForm):
             'uf',
             'siga',
             'documentacao',
+            'cidade_prefeitura',
             'secretaria',
             'cargo',
             'matricula',

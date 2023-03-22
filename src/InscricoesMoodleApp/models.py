@@ -60,6 +60,7 @@ class DadosDoAluno(models.Model):
     
     siga = models.BooleanField(verbose_name="É aluno da UFJF?*")
 
+    cidade_prefeitura = models.CharField(max_length=16, verbose_name="Cidade", choices=(('Cubatão', 'Cubatão'), ('Franco da Rocha', 'Franco da Rocha')))
     secretaria = models.CharField(max_length=255)
     cargo = models.CharField(max_length=255)
     matricula = models.CharField(max_length=31, verbose_name="Matrícula")
