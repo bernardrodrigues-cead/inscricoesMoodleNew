@@ -27,7 +27,7 @@ def AprovadoMail(curso, cpf, senha, email):
     Você foi inscrito(a) no curso {}. 
     Ao final das inscrições, para acessar sua conta na plataforma Moodle, verifique as informações abaixo:
 
-    Acesse: http://ead.cead.ufjf.br (ao final do período de inscrição)
+    Acesse: http://ead.ufjf.br (ao final do período de inscrição)
     Identificação: {}
     Senha: {}
 
@@ -246,7 +246,7 @@ def download_csv_file(request, curso_id):
 
     file_path = dir_path + '/' + aprovados.last().curso.nome_breve + aprovados.last().curso.data_inicio.strftime('%Y%m%d') + '.csv'
 
-    with open(file_path, 'w') as f:
+    with open(file_path, 'w', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=header)
         writer.writeheader()
 
@@ -294,6 +294,7 @@ def download_csv_ordenado(request, curso_id, ordem):
         'uf',
         'siga',
         'documentacao',
+        'cidade_prefeitura',
         'secretaria',
         'cargo',
         'matricula',
@@ -331,6 +332,7 @@ def download_csv_ordenado(request, curso_id, ordem):
                 'uf': aprovado.uf,
                 'siga': aprovado.siga,
                 'documentacao': aprovado.documentacao,
+                'cidade_prefeitura': aprovado.cidade_prefeitura,
                 'secretaria': aprovado.secretaria,
                 'cargo': aprovado.cargo,
                 'matricula': aprovado.matricula,
@@ -341,3 +343,44 @@ def download_csv_ordenado(request, curso_id, ordem):
 
     return FileResponse(open(file_path, 'rb'))
 
+def download_csv_cidade(request, curso_id, ordem, cidade):
+    curso = Curso.objects.get(id=curso_id)
+    cidade_atual = 'Cubatão' if cidade == 1 else 'Franco da Rocha'
+    if ordem == 'alfabetica':
+        aprovados = curso.dadosdoaluno_set.filter(status='A').filter(cidade_prefeitura=cidade_atual).order_by('sobrenome').order_by('nome')
+    elif ordem == 'inscritos':
+        aprovados = curso.dadosdoaluno_set.filter(status='A').filter(cidade_prefeitura=cidade_atual).order_by('data_cadastro')
+    
+    if(not aprovados):
+        messages.error(request, "Nenhum candidato aprovado até a presente dada")
+        return redirect('curso_detail', curso.id)
+
+    header = (
+        'nome',
+        'cpf',
+        'cidade_prefeitura'
+    )
+
+
+    # Escrita do arquivo .csv
+    dir_path = os.path.join(settings.MEDIA_ROOT, 'outputs')
+    
+    if not os.path.isdir(dir_path):
+        os.mkdir(dir_path)
+
+    file_path = dir_path + '/' + aprovados.last().curso.nome_breve + aprovados.last().curso.data_inicio.strftime('%Y%m%d') + ordem + '.csv'
+
+    with open(file_path, 'w') as f:
+        writer = csv.DictWriter(f, fieldnames=header)
+        writer.writeheader()
+
+        for aprovado in aprovados:
+            writer.writerow({
+                'nome': aprovado.nome + ' ' + aprovado.sobrenome,
+                'cpf': aprovado.cpf,
+                'cidade_prefeitura': aprovado.cidade_prefeitura
+            })
+
+    f.close()
+
+    return FileResponse(open(file_path, 'rb'))

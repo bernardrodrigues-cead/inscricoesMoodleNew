@@ -12,5 +12,6 @@ urlpatterns = [
     path('administracao/', views.Administracao, name='administracao'),
 
     path('download_csv/<int:curso_id>/', views.download_csv_file, name="download_csv"),
-    path('download_csv/<int:curso_id>/<str:ordem>', views.download_csv_ordenado, name="download_csv_ordenado")
+    path('download_csv/<int:curso_id>/<str:ordem>', views.download_csv_ordenado, name="download_csv_ordenado"),
+    path('download_csv/<int:curso_id>/<str:ordem>/<int:cidade>', views.download_csv_cidade, name="download_csv_cidade")
 ]

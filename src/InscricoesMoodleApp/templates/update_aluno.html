@@ -61,16 +61,34 @@
     </div>
 
     <div>
+        <div><span class="font-bold">Cidade da Prefeitura</span>: {{aluno.cidade_prefeitura}}</div>
+    </div>
+    <div>
         <div><span class="font-bold">Cargo</span>: {{aluno.cargo}}</div>
     </div>
     <div>
         <div><span class="font-bold">Secrateria</span>: {{aluno.secretaria}}</div>
         <div><span class="font-bold">Matrícula</span>: {{aluno.matricula}}</div>
     </div>
+    {% if aluno.status == 'w' %}
     <form method="post" class="flex gap-4 items-center [&>select]:border [&>select]:border-zinc-400 [&>select]:outline-redCead [&>select]:p-2 [&>select]:text-lg">{% csrf_token %}
         {{form.status}}
         <button class="text-white font-bold bg-redCead py-2 w-20 hover:brightness-110" type="submit">Atualizar</button>
     </form>
+    {% else %}
+    <div class="flex items-center">    
+        <div class="h-2 w-2 xl:h-4 xl:w-4 rounded-full
+            {% if aluno.status == 'W' %}
+            bg-zinc-500
+            {% elif aluno.status == 'A' %}
+            bg-green-500
+            {% else %}
+            bg-red-500
+            {% endif %}
+        "></div>
+        {{aluno.get_status_display}}
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}
